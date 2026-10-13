@@ -4,14 +4,14 @@ x86-64 Linux 预编译文件，在 Ubuntu 20.04（gcc 9.4）上构建。
 
 | 文件 | 说明 | 来源 |
 |---|---|---|
-| `bin/denum_compress` | Denum 原版压缩器（固定 4 线程） | `Denum/denum_compress.cpp` |
+| `bin/denum_compress` | Denum 原版压缩器，线程数可通过第 4 个参数设置（默认 4） | `Denum/denum_compress.cpp`，只改了线程数的读取 |
 | `bin/logminify` | LogMinify 压缩器；ART 版和 RSSPDC 版是同一个文件，用环境变量 `LOGMINIFY_INDEX` 选择 | LogMinify 分支 `exp/rsspdc-index`，提交 `50c6250` |
 | `bin/decompress_logminify` | LogMinify 解压器（ART 和 RSSPDC 的输出都能解） | 同上 |
 
 SHA-256：
 
 ```
-c68648814d7ea3630d8e91e25bee298cfb15bc2333a0fdbb6b950afeb74aa34e  denum_compress
+b5b1947abf951a96a1004da784255b29442af53a656d2324f59df68a5ea8d403  denum_compress
 fa52214fb07f86a19cdaecce2d52e247b3a54194535c3aaf6f8b946bca75d41a  logminify
 61ce1ba77e54e00483aa5ee1029b37a5288dad3ff84ae74e2cbe8549f0df5311  decompress_logminify
 ```
@@ -53,10 +53,13 @@ cp /path/to/<name>.log Logs/<name>/
 ### Denum 原版
 
 ```bash
-./bin/denum_compress <name> 100000 1
+./bin/denum_compress <name> 100000 1 [线程数]
+# 例：40 线程
+./bin/denum_compress <name> 100000 1 40
 ```
 
-第 3 个参数是模式：`1` 为默认 Denum；`2` 为 RQ3 生成去掉数字的日志；`3` 为 RQ4 去掉字符串处理的 Denum。
+- 第 3 个参数是模式：`1` 为默认 Denum；`2` 为 RQ3 生成去掉数字的日志；`3` 为 RQ4 去掉字符串处理的 Denum。
+- 第 4 个参数是线程数，可省略，省略时为 4，与原版相同。线程数必须是正整数，否则报错退出。
 
 ### LogMinify：ART 版
 
@@ -94,7 +97,7 @@ LOGMINIFY_INDEX=rsspdc LOGMINIFY_FG_THREADS=40 ./bin/logminify <name> 100000
 ```bash
 name=Apache
 mkdir -p Logs/$name output temp && cp /data/$name.log Logs/$name/
-./bin/denum_compress $name 100000 1
+./bin/denum_compress $name 100000 1 40
 LOGMINIFY_INDEX=art    LOGMINIFY_FG_THREADS=40 ./bin/logminify $name 100000
 LOGMINIFY_INDEX=rsspdc LOGMINIFY_FG_THREADS=40 ./bin/logminify $name 100000
 ./bin/decompress_logminify $name
