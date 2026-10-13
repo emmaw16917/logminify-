@@ -90,7 +90,13 @@ LOGMINIFY_INDEX=rsspdc LOGMINIFY_FG_THREADS=40 ./bin/logminify <name> 100000
 | `LOGMINIFY_FG_THREADS` | 正整数 | — | worker 线程数，实验中用 40 |
 | `LOGMINIFY_DICT_FORMAT` | `radix_fc_ids`、`radix_ids`、`radix` | `radix_fc_ids` | 字典输出格式，实验中都用默认值 `radix_fc_ids`（前缀压缩加独立 ID 文件） |
 
-压缩结束后，CR 和 CS 打印在标准输出，同时追加到 `info.txt`。
+## CR 和 CS 在哪里看
+
+- `logminify`：**只**追加写入当前目录的 `info.txt`，终端不打印。看 `Compression speed:`（CS，MB/s）和 `Original/(CompressedLogBlocks+TemplateDictionary), Compression ratio:`（CR，含模板字典）。info.txt 里不记录用的是哪种索引，记录名都是 `logminify`；另外 `Sindex building time` 这一行无论用哪种索引都叫这个名字。
+- `denum_compress`：终端打印 `Compression speed:` 和 `Compression ratio:`，同时追加到 `info.txt`（记录名 `denum_compress: original denum`）。
+- `decompress_logminify`：在 `info.txt` 追加解压耗时。
+
+`info.txt` 只追加不清空，多次运行时按顺序对应。
 
 ## 示例：同一份数据跑三个版本
 
